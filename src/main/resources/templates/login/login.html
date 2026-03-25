@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>loginpage</title>
+</head>
+<script src="/js/jquery.min.js?v=2.1.4"></script>
+<body>
+<form  id="loginform">
+    <p>
+        <label>用户名：</label>
+        <input type="text" name="userName"  id="userName" size="20" class="login_input" value="admin"/>
+    </p>
+    <p>
+        <label>密码：</label>
+        <input type="password" name="password" size="20" class="login_input"  value=""/>
+    </p>
+    <p>
+        <label>组织：</label>
+        <input type="text" name="orgId" size="20" class="login_input"  value="84" oncli/>
+    </p>
+</form>
+<button  onclick="aaa()">登录</button>
+</body>
+<script>
+    $.fn.serializeObject = function () {
+        var checkboxNames = [];
+        var $checkbox = $('input[type=checkbox]', this);
+        $.each($checkbox, function(){
+            if($.inArray(this.name, checkboxNames) == -1){
+                checkboxNames.push(this.name);
+            }
+        });
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function () {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]]; //为数组追加value
+                }
+                o[this.name].push(this.value || '');
+            } else{
+                if($.inArray(this.name, checkboxNames) >= 0){
+                    o[this.name] = [this.value]; //构造 {name : []} checkbox值放入数组中
+                }else {
+                    o[this.name] = this.value || '';//构造 {name : value}
+                }
+            }
+        });
+        $.each(checkboxNames,function () {
+            if(o[this] == undefined){
+                o[this] = "";
+            }
+        })
+        return o;
+    }
+
+    function aaa(){
+        var arry = $("#loginform").serializeObject();
+        $.ajax({
+            cache : true,
+            type : "POST",
+            url : "/login/login",
+            contentType: 'application/json',
+            data : JSON.stringify(arry),
+            error : function(request) {
+               alert("Connection error");
+            },
+            success : function(data) {
+                alert(data.msg);
+            }
+        });
+    }
+</script>
+</html>

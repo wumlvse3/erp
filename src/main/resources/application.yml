@@ -1,0 +1,45 @@
+server:
+  tomcat:
+    uri-encoding: UTF-8
+    threads:
+      max: 1000
+      min-spare: 30
+  port: 8083
+spring:
+  thymeleaf:
+    mode: LEGACYHTML5
+    cache: false
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+#    指定配置文件
+  profiles:
+#    active: dev
+    active: pro
+    #    流程校验
+  activiti:
+    check-process-definitions: false
+  task:
+    execution:
+      pool:
+        core-size: 10
+        max-size: 20
+        queue-capacity: 30
+mybatis-plus:
+  mapper-locations: classpath:mappers/*.xml, classpath*:/mybatis/mysql/base/**/*Mapper.xml,classpath:/mybatis/mysql/customer/*Mapper.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    auto-mapping-behavior: full
+    lazy-loading-enabled: true
+    aggressive-lazy-loading: false
+    call-setters-on-nulls: true    #为查询出来就为null
+minio:
+  access-key: jcloud
+  secret-key: jcloud@123
+  url: http://47.116.208.119:9000
+  bucket-name: onlinesrm2  #填写自己的bucket
+#精度配置
+degree:
+  sys_amount_degree: 2
+  sys_quantity_degree: 4
+  sys_price_degree: 4
