@@ -14,8 +14,8 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
 #    指定配置文件
   profiles:
-#    active: dev
-    active: pro
+    active: dev
+#    active: pro
     #    流程校验
   activiti:
     check-process-definitions: false

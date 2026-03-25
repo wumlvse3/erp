@@ -25,12 +25,9 @@ spring:
         max-idle: 100      # 连接池中的最大空闲连接
         min-idle: 5       # 连接池中的最小空闲连接
   datasource:
-    url: jdbc:mysql://rm-uf6185a80526636vkmo.mysql.rds.aliyuncs.com:3306/onlinesrm?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
-    username: mom_db
-    password: 123456wW!
-#    url: jdbc:mysql://localhost:3306/onlinesrm?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
-#    username: root
-#    password: 123456
+    url: jdbc:mysql://rm-uf6185a80526636vkmo.mysql.rds.aliyuncs.com:3306/plattest?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: test001
+    password: abc123
     driver-class-name: com.mysql.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     hikari:

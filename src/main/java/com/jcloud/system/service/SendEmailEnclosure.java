@@ -3,11 +3,9 @@ package com.jcloud.system.service;
  * 带附件的方式发送邮件（附件id）
  */
 
-import com.jcloud.customer.base.FileUtil;
 import com.jcloud.system.config.EmailConfig;
 import com.jcloud.system.entity.EmailRecord;
 import com.jcloud.system.entity.EmailRecordEnclosure;
-import com.jcloud.system.entity.EmailRecordParam;
 import com.jcloud.system.minio.MinioUtil;
 import com.jcloud.system.utils.EmailUtils;
 
