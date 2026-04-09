@@ -1,7 +1,6 @@
 package com.jcloud.customer.WmsBaseData.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.jcloud.customer.WmsBaseData.entity.MtlOnhandDetails;
 import com.jcloud.customer.WmsBaseData.vo.MtlOnhandDetailsV;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -24,8 +23,6 @@ public interface MtlOnhandVDetailsMapper extends BaseMapper<MtlOnhandDetailsV> {
 
 	MtlOnhandDetailsV getBySerialV(@Param("serial_number") String serial);
 
-	MtlOnhandDetails getBySerial(@Param("serial_number") String serial);
-	MtlOnhandDetails getByLotNumberAndInventory(@Param("lot_number") String lot_number, @Param("inventoryId") String inventoryId, @Param("locator") String locatorId);
 
 	Double getOnhandSumQtyByParam(@Param("inventoryId") String inventoryId, @Param("locatorId") String locatorId,
                                   @Param("vendorId") String vendorId, @Param("lotNumber") String lotNumber, @Param("serialNUmber") String serialNumber,

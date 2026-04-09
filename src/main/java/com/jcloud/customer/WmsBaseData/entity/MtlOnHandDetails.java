@@ -7,12 +7,11 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.util.Date;
 
 @Data
 @TableName("mtl_onhand_details")
-public class MtlOnhandDetails extends Model<MtlOnhandDetails> {
+public class MtlOnHandDetails extends Model<MtlOnHandDetails> {
 
     @TableId(value = "detail_id")
     private String detail_id;
@@ -36,10 +35,6 @@ public class MtlOnhandDetails extends Model<MtlOnhandDetails> {
 
     @TableField(value = "vendor_id")
     private String vendor_id;
-    @TableField(value = "vendor_code")
-    private String vendor_code;
-    @TableField(value = "vendor_name")
-    private String vendor_name;
     @TableField(value = "locator_id")
     private String locator_id;
     @TableField(value = "inventory_id")
@@ -53,8 +48,9 @@ public class MtlOnhandDetails extends Model<MtlOnhandDetails> {
     @TableField(value = "valid_date")
     private Date valid_date;
     @TableField(value = "vmi_flag")
-    private Integer vmi_flag;
-
+    private Integer vmi_flag=0;
+    @TableField(value = "vendor_lot")
+    private String vendor_lot;
 
 
     @TableField(value = "create_date",fill = FieldFill.INSERT)
@@ -67,27 +63,33 @@ public class MtlOnhandDetails extends Model<MtlOnhandDetails> {
     private String update_by;
     @TableField(value = "customer_id")
     private String customer_id;
-    @TableField(value = "vendor_lot")
-    private String vendor_lot;
+    @TableField(value = "pro_lot")
+    private String pro_lot;
 
+    @TableField(value = "items_code")
     private String items_code;
 
+    @TableField(value = "items_name")
     private String items_name;
 
+    @TableField(value = "inventory_code")
     private String inventory_code;
 
+    @TableField(value = "inventory_name")
     private String inventory_name;
 
+    @TableField(value = "vendor_code")
+    private String vendor_code;
+
+    @TableField(value = "vendor_name")
+    private String vendor_name;
+
+    @TableField(value = "locator_code")
     private String locator_code;
 
-    @TableField(value = "project_id")
-    private String project_id;
+    @TableField(exist = false)
+    private Double reserved_qty;
 
-    @TableField(value = "project_code")
-    private String project_code;
-
-    @Override
-    public Serializable pkVal() {
-        return this.detail_id;
-    }
+    @TableField(value = "carton_code")
+    private String carton_code;
 }
