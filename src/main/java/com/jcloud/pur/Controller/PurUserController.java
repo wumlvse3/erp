@@ -1,0 +1,29 @@
+package com.jcloud.pur.Controller;
+
+import com.alibaba.fastjson.JSON;
+import com.jcloud.system.utils.R;
+import com.jcloud.pur.service.AdduserService;
+import com.jcloud.pur.vo.UserVo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+/**
+ * 任务基本信息
+ * **/
+@RestController
+@RequestMapping("/sysuser")
+public class PurUserController {
+    @Autowired
+    private AdduserService service;
+    /**
+     * 确定
+     */
+    @RequestMapping(value="/adduser",method = RequestMethod.POST)
+    public R acceptTaskByCode(@RequestBody Map<String,Object> params) {
+        String str = (String) params.get("unitdatas");
+        UserVo uservo = JSON.parseObject(str, UserVo.class);
+        return  service.addObj(uservo);
+    }
+}
