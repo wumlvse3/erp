@@ -56,4 +56,5 @@ public interface ComUnitService extends IService<ComUnitEntity> {
 
     void passAllSheetTask(String id);
 
+    R normDelete(Map<String, Object> params);
 }
