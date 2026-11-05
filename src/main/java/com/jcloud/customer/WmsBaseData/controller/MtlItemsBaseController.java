@@ -21,13 +21,13 @@ public class MtlItemsBaseController {
     @Autowired
     MtlItemsOrgService mtlItemsOrgService;
     @RequestMapping(value = "addOrgItems",method = RequestMethod.POST)
-    public R addOrgItems(@RequestBody Map<String,String> params){
-        List<List<Map<String,Object>>> list = JSONUtil.parseArray(params.get("listdatas")).toBean(List.class);
+    public R addOrgItems(@RequestBody String listdatasJson){
+        List<List<Map<String,Object>>> list = JSONUtil.parseArray(listdatasJson).toBean(List.class);
         return mtlItemsBaseService.addOrgItems(list);
     }
     @RequestMapping(value = "addAllOrgItems",method = RequestMethod.POST)
-    public R addAllOrgItems(@RequestBody Map<String,String> params){
-        List<List<Map<String,Object>>> list = JSONUtil.parseArray(params.get("listdatas")).toBean(List.class);
+    public R addAllOrgItems(@RequestBody String listdatasJson){
+        List<List<Map<String,Object>>> list = JSONUtil.parseArray(listdatasJson).toBean(List.class);
         return mtlItemsBaseService.addAllOrgItems(list);
     }
     @RequestMapping(value = "update",method = RequestMethod.POST)

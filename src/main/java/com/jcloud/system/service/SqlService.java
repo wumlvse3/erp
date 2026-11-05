@@ -38,12 +38,13 @@ public interface SqlService {
     public List<Map<String,Object>> getAll(String randomSql);
 
     /**
-     *自定义表单查询单独数据
+     * 自定义表单查询单独数据
+     *
      * @param randomSql
      * @return 返回Map
      * yang
      */
-    public Map<String,Object> getOne( String randomSql);
+    public Map<String, Object> getOne(String randomSql);
 
     /**
      * 自定义表单查询一个字段

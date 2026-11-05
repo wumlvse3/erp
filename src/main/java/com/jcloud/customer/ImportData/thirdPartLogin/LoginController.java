@@ -1,7 +1,9 @@
 package com.jcloud.customer.ImportData.thirdPartLogin;
 
 import com.jcloud.system.annotation.Log;
+import com.jcloud.system.entity.UserEntity;
 import com.jcloud.system.service.LoginService;
+import com.jcloud.system.service.SqlService;
 import com.jcloud.system.shiro.ShiroUtils;
 import com.jcloud.system.utils.R;
 import com.jcloud.system.vo.UserLoginReq;

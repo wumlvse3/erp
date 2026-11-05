@@ -1,0 +1,22 @@
+CREATE TABLE `epd_calendar` (
+  `uu_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `inv_org` varchar(64) DEFAULT NULL COMMENT '库存组织',
+  `group_id` varchar(64) DEFAULT NULL COMMENT '分组ID',
+  `calendar_id` varchar(64) DEFAULT NULL COMMENT '日历ID',
+  `calendar_date` date DEFAULT NULL COMMENT '日历日期',
+  `week_day` varchar(20) DEFAULT NULL COMMENT '对应星期',
+  `work_status` tinyint(1) DEFAULT '1' COMMENT '工作或休息：1-工作，0-休息',
+  `festival_name` varchar(100) DEFAULT NULL COMMENT '节日信息',
+  `is_festival` tinyint(1) DEFAULT '0' COMMENT '是否节日：1-是，0-否',
+  `is_cycle` tinyint(1) DEFAULT '0' COMMENT '节日是否循环：1-是，0-否',
+  `day_of_month` int(11) DEFAULT NULL COMMENT '当月第几天',
+  `month_of_year` int(11) DEFAULT NULL COMMENT '当年第几月',
+  `create_date` datetime DEFAULT NULL COMMENT '创建时间',
+  `create_by` varchar(64) DEFAULT NULL COMMENT '创建人',
+  `update_date` datetime DEFAULT NULL COMMENT '更新时间',
+  `update_by` varchar(64) DEFAULT NULL COMMENT '更新人',
+  PRIMARY KEY (`uu_id`),
+  KEY `idx_calendar_id` (`calendar_id`),
+  KEY `idx_calendar_date` (`calendar_date`),
+  KEY `idx_inv_org` (`inv_org`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='工厂日历明细表';

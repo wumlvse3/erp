@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Excel 导入配置管理</title>
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <style>
+    .excel-config-container {
+      padding: 20px;
+    }
+    .code-preview {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 4px;
+      max-height: 500px;
+      overflow: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .dialog-footer {
+      text-align: right;
+      padding-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="excel-config-container">
+      <h2>Excel 导入配置管理</h2>
+
+      <el-button type="primary" @click="showAddDialog" style="margin-bottom: 20px;">
+        <i class="el-icon-plus"></i> 新增配置
+      </el-button>
+
+      <el-button type="warning" @click="loadConfigList" style="margin-bottom: 20px; margin-left: 10px;">
+        <i class="el-icon-refresh"></i> 刷新
+      </el-button>
+
+      <el-table :data="configList" border style="width: 100%;">
+        <el-table-column prop="tableName" label="表名" width="150"></el-table-column>
+        <el-table-column prop="tableComment" label="表描述" width="150"></el-table-column>
+        <el-table-column prop="entityName" label="实体类名" width="150"></el-table-column>
+        <el-table-column prop="moduleName" label="模块名" width="120"></el-table-column>
+        <el-table-column label="字段数" width="80">
+          <template slot-scope="scope">
+            {{ scope.row.fieldList ? scope.row.fieldList.length : 0 }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="status" label="状态" width="80">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.status === '1' ? 'success' : 'danger'">
+              {{ scope.row.status === '1' ? '启用' : '停用' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="350">
+          <template slot-scope="scope">
+            <el-button size="mini" @click="editConfig(scope.row)">编辑</el-button>
+            <el-button size="mini" type="success" @click="showImportDialog(scope.row.tableName)">导入</el-button>
+            <el-button size="mini" type="danger" @click="deleteConfig(scope.row.id)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="80%">
+        <el-form :model="configForm" label-width="120px">
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="表名">
+                <el-input v-model="configForm.tableName" placeholder="如: epd_item_master" @input="autoFillEntityName"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="表描述">
+                <el-input v-model="configForm.tableComment" placeholder="如: 物品主数据"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="实体类名">
+                <el-input v-model="configForm.entityName" placeholder="如: EpdItemMaster"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="包名">
+                <el-input v-model="configForm.packageName" placeholder="如: com.jcloud.epd"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="模块名">
+                <el-input v-model="configForm.moduleName" placeholder="如: epd"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="标题行数">
+                <el-input-number v-model="configForm.titleRows" :min="0" :max="5"></el-input-number>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="表头行数">
+                <el-input-number v-model="configForm.headRows" :min="1" :max="3"></el-input-number>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-form-item label="需要校验">
+            <el-switch v-model="configForm.needVerify" :active-value="1" :inactive-value="0"></el-switch>
+          </el-form-item>
+
+          <el-divider>字段配置</el-divider>
+
+          <el-button type="primary" size="small" @click="addField" style="margin-bottom: 10px;">
+            <i class="el-icon-plus"></i> 添加字段
+          </el-button>
+
+          <el-button type="success" size="small" @click="refreshFieldsFromTable" style="margin-bottom: 10px; margin-left: 10px;">
+            <i class="el-icon-refresh"></i> 从表结构刷新字段
+          </el-button>
+
+          <el-table :data="configForm.fieldList" border style="width: 100%;">
+            <el-table-column label="Excel列名" width="120">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.columnName" size="small"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column label="字段描述" width="120">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.columnComment" size="small"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column label="字段名" width="120">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.fieldName" size="small"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column label="Java类型" width="120">
+              <template slot-scope="scope">
+                <el-select v-model="scope.row.javaType" size="small">
+                  <el-option label="String" value="String"></el-option>
+                  <el-option label="Integer" value="Integer"></el-option>
+                  <el-option label="Long" value="Long"></el-option>
+                  <el-option label="Double" value="Double"></el-option>
+                  <el-option label="BigDecimal" value="BigDecimal"></el-option>
+                  <el-option label="Date" value="Date"></el-option>
+                  <el-option label="Boolean" value="Boolean"></el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column label="长度" width="80">
+              <template slot-scope="scope">
+                <el-input-number v-model="scope.row.columnLength" size="small" :min="0"></el-input-number>
+              </template>
+            </el-table-column>
+            <el-table-column label="顺序" width="80">
+              <template slot-scope="scope">
+                <el-input-number v-model="scope.row.orderNum" size="small" :min="1"></el-input-number>
+              </template>
+            </el-table-column>
+            <el-table-column label="必输" width="80">
+              <template slot-scope="scope">
+                <el-switch v-model="scope.row.isRequired"></el-switch>
+              </template>
+            </el-table-column>
+            <el-table-column label="日期格式" width="120">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.dateFormat" size="small" placeholder="yyyy-MM-dd"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column label="替换值" width="150">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.replaceValue" size="small" placeholder="男_1,女_2"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="80">
+              <template slot-scope="scope">
+                <el-button size="mini" type="danger" @click="removeField(scope.$index)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form>
+
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="saveConfig">保存</el-button>
+        </div>
+      </el-dialog>
+
+      <el-dialog title="代码预览" :visible.sync="previewVisible" width="80%">
+        <el-tabs v-model="previewTab">
+          <el-tab-pane label="实体类" name="entity">
+            <pre class="code-preview">{{ previewData.entityCode }}</pre>
+          </el-tab-pane>
+          <el-tab-pane label="Controller" name="controller">
+            <pre class="code-preview">{{ previewData.controllerCode }}</pre>
+          </el-tab-pane>
+        </el-tabs>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="previewVisible = false">关闭</el-button>
+        </div>
+      </el-dialog>
+
+      <el-dialog title="Excel 导入" :visible.sync="importVisible" width="50%">
+        <el-upload
+          action="/api/excel/universal/import"
+          :data="{ tableName: importTableName }"
+          :before-upload="beforeImport"
+          :on-success="handleImportSuccess"
+          :on-error="handleImportError"
+          :show-file-list="false"
+          accept=".xlsx,.xls"
+        >
+          <el-button type="primary" icon="el-icon-upload2">选择 Excel 文件导入</el-button>
+        </el-upload>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="importVisible = false">关闭</el-button>
+        </div>
+      </el-dialog>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: function() {
+        return {
+          configList: [],
+          dialogVisible: false,
+          dialogTitle: '新增配置',
+          isEdit: false,
+          configForm: {
+            id: null,
+            tableName: '',
+            tableComment: '',
+            entityName: '',
+            packageName: 'com.jcloud.easypoi',
+            moduleName: 'easypoi',
+            titleRows: 0,
+            headRows: 1,
+            needVerify: false,
+            status: '1',
+            fieldList: []
+          },
+          previewVisible: false,
+          previewTab: 'entity',
+          previewData: {
+            entityCode: '',
+            controllerCode: ''
+          },
+          importVisible: false,
+          importTableName: ''
+        };
+      },
+      created: function() {
+        this.loadConfigList();
+      },
+      methods: {
+        loadConfigList: function() {
+          var self = this;
+          axios.get('/logic/excel/list')
+            .then(function(res) {
+              if (res.data.code === 200) {
+                self.configList = res.data.data;
+              }
+            })
+            .catch(function() {
+              self.$message.error('加载配置列表失败');
+            });
+        },
+
+        showAddDialog: function() {
+          this.dialogTitle = '新增配置';
+          this.isEdit = false;
+          this.configForm = {
+            id: null,
+            tableName: '',
+            tableComment: '',
+            entityName: '',
+            packageName: 'com.jcloud.easypoi',
+            moduleName: 'easypoi',
+            titleRows: 0,
+            headRows: 1,
+            needVerify: false,
+            status: '1',
+            fieldList: []
+          };
+          this.dialogVisible = true;
+        },
+
+        editConfig: function(row) {
+          var self = this;
+          this.dialogTitle = '编辑配置';
+          this.isEdit = true;
+          axios.get('/logic/excel/get/' + row.id)
+            .then(function(res) {
+              if (res.data.code === 200) {
+                var data = res.data.data;
+                var fieldList = data.fieldList || [];
+                // 按 sortOrder 从小到大排序
+                fieldList.sort(function(a, b) {
+                  return (a.sortOrder || 0) - (b.sortOrder || 0);
+                });
+                self.configForm = {
+                  id: data.id,
+                  tableName: data.tableName || '',
+                  tableComment: data.tableComment || '',
+                  entityName: data.entityName || '',
+                  packageName: data.packageName || 'com.jcloud.easypoi',
+                  moduleName: data.moduleName || 'easypoi',
+                  titleRows: data.titleRows || 0,
+                  headRows: data.headRows || 1,
+                  needVerify: data.needVerify || false,
+                  status: data.status || '1',
+                  fieldList: fieldList
+                };
+                self.dialogVisible = true;
+              } else {
+                self.$message.error(res.data.message);
+              }
+            })
+            .catch(function() {
+              self.$message.error('加载配置详情失败');
+            });
+        },
+
+        refreshFieldsFromTable: function() {
+          var self = this;
+          if (!this.configForm.tableName) {
+            this.$message.warning('请先输入表名');
+            return;
+          }
+          axios.get('/logic/excel/getTableColumns/' + this.configForm.tableName)
+            .then(function(res) {
+              if (res.data.code === 200) {
+                var columns = res.data.data;
+                if (!columns || columns.length === 0) {
+                  self.$message.warning('未找到表 [' + self.configForm.tableName + '] 的字段信息');
+                  return;
+                }
+                var fieldList = [];
+                for (var i = 0; i < columns.length; i++) {
+                  var col = columns[i];
+                  var sortOrder = (fieldList.length + 1) * 10;
+                  fieldList.push({
+                    columnName: col.columnComment || col.columnName,
+                    columnComment: col.columnComment || '',
+                    fieldName: col.fieldName,
+                    javaType: col.javaType,
+                    columnLength: col.columnLength || 50,
+                    orderNum: sortOrder,
+                    isRequired: col.isRequired || false,
+                    dateFormat: 'Date' === col.javaType ? 'yyyy-MM-dd' : '',
+                    replaceValue: '',
+                    sortOrder: sortOrder
+                  });
+                }
+                self.configForm.fieldList = fieldList;
+                self.$message.success('已刷新 ' + fieldList.length + ' 个字段，顺序为 10, 20, 30...');
+              } else {
+                self.$message.error(res.data.message);
+              }
+            })
+            .catch(function() {
+              self.$message.error('获取表结构失败');
+            });
+        },
+
+        addField: function() {
+          var maxSortOrder = 0;
+          for (var i = 0; i < this.configForm.fieldList.length; i++) {
+            var sortOrder = this.configForm.fieldList[i].sortOrder || 0;
+            if (sortOrder > maxSortOrder) {
+              maxSortOrder = sortOrder;
+            }
+          }
+          var newSortOrder = maxSortOrder + 10;
+          this.configForm.fieldList.push({
+            columnName: '',
+            columnComment: '',
+            fieldName: '',
+            javaType: 'String',
+            columnLength: 50,
+            orderNum: newSortOrder,
+            isRequired: false,
+            dateFormat: '',
+            replaceValue: '',
+            sortOrder: newSortOrder
+          });
+        },
+
+        removeField: function(index) {
+          this.configForm.fieldList.splice(index, 1);
+        },
+
+        saveConfig: function() {
+          var self = this;
+          var url = this.isEdit ? '/logic/excel/update' : '/logic/excel/save';
+          axios.post(url, this.configForm)
+            .then(function(res) {
+              if (res.data.code === 200) {
+                self.$message.success('保存成功');
+                self.dialogVisible = false;
+                self.loadConfigList();
+              } else {
+                self.$message.error(res.data.message);
+              }
+            })
+            .catch(function() {
+              self.$message.error('保存失败');
+            });
+        },
+
+        deleteConfig: function(id) {
+          var self = this;
+          this.$confirm('确定删除此配置吗？', '提示', { type: 'warning' })
+            .then(function() {
+              axios.post('/logic/excel/delete/' + id)
+                .then(function(res) {
+                  if (res.data.code === 200) {
+                    self.$message.success('删除成功');
+                    self.loadConfigList();
+                  }
+                })
+                .catch(function() {
+                  self.$message.error('删除失败');
+                });
+            })
+            .catch(function() {});
+        },
+
+        previewCode: function(tableName) {
+          var self = this;
+          axios.post('/logic/excel/preview', null, {
+            params: { tableName: tableName }
+          })
+            .then(function(res) {
+              if (res.data.code === 200) {
+                self.previewData = {
+                  entityCode: res.data.entityCode,
+                  controllerCode: res.data.controllerCode
+                };
+                self.previewVisible = true;
+              }
+            })
+            .catch(function() {
+              self.$message.error('预览失败');
+            });
+        },
+
+        showImportDialog: function(tableName) {
+          this.importTableName = tableName;
+          this.importVisible = true;
+        },
+
+        beforeImport: function(file) {
+          var isExcel = file.type === 'application/vnd.ms-excel' ||
+                        file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+          if (!isExcel) {
+            this.$message.error('只能上传 Excel 文件');
+            return false;
+          }
+          return true;
+        },
+
+        handleImportSuccess: function(response) {
+          if (response.code === 200) {
+            this.$message.success(response.message);
+            this.importVisible = false;
+          } else {
+            this.$message.error(response.message);
+          }
+        },
+
+        handleImportError: function() {
+          this.$message.error('导入失败');
+        },
+
+        autoFillEntityName: function() {
+          if (this.configForm.tableName && !this.isEdit) {
+            var parts = this.configForm.tableName.split('_');
+            var entityName = '';
+            for (var i = 0; i < parts.length; i++) {
+              if (parts[i].length > 0) {
+                entityName += parts[i].charAt(0).toUpperCase() + parts[i].substring(1).toLowerCase();
+              }
+            }
+            this.configForm.entityName = entityName;
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

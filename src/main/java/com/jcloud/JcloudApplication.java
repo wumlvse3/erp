@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableAsync
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @EnableTransactionManagement
-@MapperScan({"com.jcloud.system.mapper","com.jcloud.system.dao","com.jcloud.customer.*.mapper","com.jcloud.system.task.mapper","com.jcloud.timedTask.mapper"})
+@MapperScan({"com.jcloud.system.mapper","com.jcloud.system.dao","com.jcloud.customer.*.mapper","com.jcloud.system.task.mapper","com.jcloud.timedTask.mapper","com.jcloud.epd.mapper","com.jcloud.pur.mapper","com.jcloud.easypoi.excel.config.mapper","com.jcloud.easypoi.excel.mapper"})
 public class JcloudApplication  extends SpringBootServletInitializer {
 
     public static void main(String[] args) {

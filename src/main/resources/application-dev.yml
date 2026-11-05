@@ -42,8 +42,8 @@ spring:
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
-    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
-  mapper-locations: classpath:/mybatis/mysql/customer/*Mapper.xml
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:/mybatis/mysql/*Mapper.xml,classpath:/mybatis/mysql/customer/*Mapper.xml
   global-config:
     db-config:
       id-type: assign_id

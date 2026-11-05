@@ -58,7 +58,9 @@ public class UserRealm extends AuthorizingRealm {
             throw new UnknownAccountException("账号或密码不正确");
         }
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, user.getPassword(), ByteSource.Util.bytes(user.getUsername()), getName());
+
         return info;
+
     }
 
     @Override

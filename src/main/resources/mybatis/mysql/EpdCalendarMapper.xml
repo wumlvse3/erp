@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jcloud.epd.mapper.EpdCalendarMapper">
+
+    <select id="selectByYearAndMonth" resultType="com.jcloud.epd.entity.EpdCalendar">
+        SELECT * FROM epd_calendar
+        WHERE calendar_id = #{calendarId}
+          AND YEAR(calendar_date) = #{year}
+          AND MONTH(calendar_date) = #{month}
+        ORDER BY calendar_date
+    </select>
+
+    <delete id="deleteByCalendarId">
+        DELETE FROM epd_calendar WHERE calendar_id = #{calendarId}
+    </delete>
+
+    <delete id="deleteByDateRange">
+        DELETE FROM epd_calendar 
+        WHERE calendar_id = #{calendarId}
+          AND inv_org = #{invOrg}
+          AND calendar_date BETWEEN #{startDate} AND #{endDate}
+    </delete>
+
+    <select id="selectCalendarByMonth" resultType="map">
+        SELECT 
+            id,
+            calendar_date,
+            week_day,
+            work_status,
+            festival_name,
+            is_festival,
+            is_cycle,
+            day_of_month
+        FROM epd_calendar
+        WHERE calendar_id = #{calendarId}
+          AND YEAR(calendar_date) = #{year}
+          AND MONTH(calendar_date) = #{month}
+        ORDER BY calendar_date
+    </select>
+
+    <insert id="batchInsert">
+        INSERT INTO epd_calendar (inv_org, group_id, calendar_id, calendar_date, week_day,
+            work_status, festival_name, is_festival, is_cycle, day_of_month, month_of_year,
+            lunar_date, lunar_month, lunar_day, is_legal_holiday)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.inv_org}, #{item.group_id}, #{item.calendar_id}, #{item.calendar_date}, #{item.week_day},
+             #{item.work_status}, #{item.festival_name}, #{item.is_festival}, #{item.is_cycle},
+             #{item.day_of_month}, #{item.month_of_year}, #{item.lunar_date}, #{item.lunar_month},
+             #{item.lunar_day}, #{item.is_legal_holiday})
+        </foreach>
+    </insert>
+
+</mapper>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jcloud.epd.mapper.WoInfoMapper">
+
+    <sql id="baseColumns">
+        COMPANY_CODE, WORK_NO, WORK_DESC, PRIORITY_DATE, PRIORITY_LEVEL,
+        PRIORITY_NO, PICK_STATUS, VALID_FLAG, RECORD_CODE, RECORD_NAME, RECORD_DATE
+    </sql>
+
+    <select id="selectByWorkNo" resultType="com.jcloud.epd.entity.WoInfo">
+        SELECT <include refid="baseColumns"/>
+        FROM WO_INFO
+        WHERE COMPANY_CODE = #{companyCode}
+          AND WORK_NO = #{workNo}
+    </select>
+
+    <!-- 参与排序的工作令：优先级日期越小越靠前；日期相同则优先等级越小越靠前；再按工作令号保证顺序稳定 -->
+    <select id="selectValidList" resultType="com.jcloud.epd.entity.WoInfo">
+        SELECT <include refid="baseColumns"/>
+        FROM WO_INFO
+        WHERE COMPANY_CODE = #{companyCode}
+          AND VALID_FLAG = 'Y'
+        ORDER BY PRIORITY_DATE ASC, PRIORITY_LEVEL ASC, WORK_NO ASC
+    </select>
+
+    <select id="selectAllList" resultType="com.jcloud.epd.entity.WoInfo">
+        SELECT <include refid="baseColumns"/>
+        FROM WO_INFO
+        WHERE COMPANY_CODE = #{companyCode}
+        ORDER BY PRIORITY_NO ASC
+    </select>
+
+    <insert id="insertWo">
+        INSERT INTO WO_INFO (COMPANY_CODE, WORK_NO, WORK_DESC, PRIORITY_DATE, PRIORITY_LEVEL,
+            PRIORITY_NO, PICK_STATUS, VALID_FLAG, RECORD_CODE, RECORD_NAME, RECORD_DATE)
+        VALUES (#{company_code}, #{work_no}, #{work_desc}, #{priority_date}, #{priority_level},
+            #{priority_no}, #{pick_status}, #{valid_flag}, #{record_code}, #{record_name}, #{record_date})
+    </insert>
+
+    <update id="updateWo">
+        UPDATE WO_INFO
+        SET WORK_DESC = #{work_desc},
+            PRIORITY_DATE = #{priority_date},
+            PRIORITY_LEVEL = #{priority_level},
+            PICK_STATUS = #{pick_status},
+            VALID_FLAG = #{valid_flag},
+            RECORD_CODE = #{record_code},
+            RECORD_NAME = #{record_name},
+            RECORD_DATE = #{record_date}
+        WHERE COMPANY_CODE = #{company_code}
+          AND WORK_NO = #{work_no}
+    </update>
+
+    <!-- Oracle 不支持多行 VALUES 更新，使用 CASE WHEN 批量更新序号 -->
+    <update id="batchUpdatePriorityNo">
+        UPDATE WO_INFO
+        SET PRIORITY_NO = CASE WORK_NO
+            <foreach collection="list" item="item">
+                WHEN #{item.work_no} THEN #{item.priority_no}
+            </foreach>
+        END
+        WHERE COMPANY_CODE = #{companyCode}
+          AND WORK_NO IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.work_no}
+        </foreach>
+    </update>
+
+</mapper>
