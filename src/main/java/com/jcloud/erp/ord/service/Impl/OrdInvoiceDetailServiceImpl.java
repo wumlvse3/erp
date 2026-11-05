@@ -7,7 +7,7 @@ import com.jcloud.erp.ord.service.OrdInvoiceDetailService;
 import org.springframework.stereotype.Service;
 
 /**
- * 发票明细信息, 业务�? */
+ * 鍙戠エ鏄庣粏淇℃伅, 涓氬姟绫? */
 @Service
 public class OrdInvoiceDetailServiceImpl extends ServiceImpl<OrdInvoiceDetailMapper, OrdInvoiceDetail> implements OrdInvoiceDetailService {
 }
