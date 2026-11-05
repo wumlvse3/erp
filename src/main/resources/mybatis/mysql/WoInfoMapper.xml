@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jcloud.epd.mapper.WoInfoMapper">
+<mapper namespace="com.jcloud.erp.epd.mapper.WoInfoMapper">
 
     <sql id="baseColumns">
         COMPANY_CODE, WORK_NO, WORK_DESC, PRIORITY_DATE, PRIORITY_LEVEL,
         PRIORITY_NO, PICK_STATUS, VALID_FLAG, RECORD_CODE, RECORD_NAME, RECORD_DATE
     </sql>
 
-    <select id="selectByWorkNo" resultType="com.jcloud.epd.entity.WoInfo">
+    <select id="selectByWorkNo" resultType="com.jcloud.erp.epd.entity.WoInfo">
         SELECT <include refid="baseColumns"/>
         FROM WO_INFO
         WHERE COMPANY_CODE = #{companyCode}
@@ -15,7 +15,7 @@
     </select>
 
     <!-- 参与排序的工作令：优先级日期越小越靠前；日期相同则优先等级越小越靠前；再按工作令号保证顺序稳定 -->
-    <select id="selectValidList" resultType="com.jcloud.epd.entity.WoInfo">
+    <select id="selectValidList" resultType="com.jcloud.erp.epd.entity.WoInfo">
         SELECT <include refid="baseColumns"/>
         FROM WO_INFO
         WHERE COMPANY_CODE = #{companyCode}
@@ -23,7 +23,7 @@
         ORDER BY PRIORITY_DATE ASC, PRIORITY_LEVEL ASC, WORK_NO ASC
     </select>
 
-    <select id="selectAllList" resultType="com.jcloud.epd.entity.WoInfo">
+    <select id="selectAllList" resultType="com.jcloud.erp.epd.entity.WoInfo">
         SELECT <include refid="baseColumns"/>
         FROM WO_INFO
         WHERE COMPANY_CODE = #{companyCode}

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jcloud.epd.mapper.EpdCalendarMapper">
+<mapper namespace="com.jcloud.erp.epd.mapper.EpdCalendarMapper">
 
-    <select id="selectByYearAndMonth" resultType="com.jcloud.epd.entity.EpdCalendar">
+    <select id="selectByYearAndMonth" resultType="com.jcloud.erp.epd.entity.EpdCalendar">
         SELECT * FROM epd_calendar
         WHERE calendar_id = #{calendarId}
           AND YEAR(calendar_date) = #{year}

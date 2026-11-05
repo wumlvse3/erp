@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `excel_import_field` (
 
 -- 示例数据：物品主数据导入配置
 INSERT INTO `excel_import_config` (`table_name`, `table_comment`, `entity_name`, `package_name`, `module_name`, `title_rows`, `head_rows`, `need_verify`) VALUES
-('epd_item_master', '物品主数据', 'EpdItemMaster', 'com.jcloud.epd', 'epd', 0, 1, 1);
+('epd_item_master', '物品主数据', 'EpdItemMaster', 'com.jcloud.erp.epd', 'epd', 0, 1, 1);
 
 -- 获取刚插入的配置ID
 SET @config_id = LAST_INSERT_ID();

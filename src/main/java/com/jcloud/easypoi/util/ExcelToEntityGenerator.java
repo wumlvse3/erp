@@ -286,7 +286,7 @@ public class ExcelToEntityGenerator {
             System.out.println("使用方法:");
             System.out.println("java ExcelToEntityGenerator <Excel文件路径> <实体类名> <包名>");
             System.out.println("示例:");
-            System.out.println("java ExcelToEntityGenerator C:/data/物品导入模板.xlsx EpdItemMaster com.jcloud.epd.entity");
+            System.out.println("java ExcelToEntityGenerator C:/data/物品导入模板.xlsx EpdItemMaster com.jcloud.erp.epd.entity");
             return;
         }
 
