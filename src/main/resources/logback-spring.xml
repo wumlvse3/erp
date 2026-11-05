@@ -27,6 +27,10 @@
         <appender-ref ref="console"/>
         <appender-ref ref="logFile" />
     </logger>
+    <logger name="com.jcloud" additivity="false">
+        <appender-ref ref="console"/>
+        <appender-ref ref="logFile" />
+    </logger>
     <!--日志控制，添加后数据库访问日志不打印-->
     <logger name="jdbc.sqlonly" level="DEBUG">
         <appender-ref ref="logFile"/>
